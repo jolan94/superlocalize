@@ -23,6 +23,23 @@ const languageInfo = {
   es: { name: 'Spanish', flag: '🇪🇸' },
   fr: { name: 'French', flag: '🇫🇷' },
   de: { name: 'German', flag: '🇩🇪' },
+  it: { name: 'Italian', flag: '🇮🇹' },
+  pt: { name: 'Portuguese', flag: '🇵🇹' },
+  zh: { name: 'Chinese', flag: '🇨🇳' },
+  ja: { name: 'Japanese', flag: '🇯🇵' },
+  ko: { name: 'Korean', flag: '🇰🇷' },
+  nl: { name: 'Dutch', flag: '🇳🇱' },
+  ru: { name: 'Russian', flag: '🇷🇺' },
+  ar: { name: 'Arabic', flag: '🇸🇦' },
+  hi: { name: 'Hindi', flag: '🇮🇳' },
+  sv: { name: 'Swedish', flag: '🇸🇪' },
+  da: { name: 'Danish', flag: '🇩🇰' },
+  no: { name: 'Norwegian', flag: '🇳🇴' },
+  fi: { name: 'Finnish', flag: '🇫🇮' },
+  pl: { name: 'Polish', flag: '🇵🇱' },
+  tr: { name: 'Turkish', flag: '🇹🇷' },
+  th: { name: 'Thai', flag: '🇹🇭' },
+  vi: { name: 'Vietnamese', flag: '🇻🇳' },
 };
 
 export function ResultsPanel({ translations, originalJson }: ResultsPanelProps) {
