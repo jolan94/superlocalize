@@ -5,13 +5,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Editor } from '@monaco-editor/react';
 import { useTheme } from 'next-themes';
 import { 
-  Download, 
   Copy, 
   Check, 
-  FileText
+  FileText,
+  Archive,
+  File
 } from 'lucide-react';
 import { TranslationResult, Language } from '@/types';
 import toast from 'react-hot-toast';
+import JSZip from 'jszip';
 
 interface ResultsPanelProps {
   translations: TranslationResult;
@@ -46,6 +48,7 @@ export function ResultsPanel({ translations, originalJson }: ResultsPanelProps) 
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<Language | 'all' | null>(null);
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Set active tab when translations are available
   useState(() => {
@@ -69,7 +72,7 @@ export function ResultsPanel({ translations, originalJson }: ResultsPanelProps) 
     }
   }, []);
 
-  const handleDownload = useCallback((content: string, filename: string) => {
+  const downloadFile = useCallback((content: string, filename: string) => {
     try {
       const blob = new Blob([content], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -80,29 +83,90 @@ export function ResultsPanel({ translations, originalJson }: ResultsPanelProps) 
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success(`Downloaded ${filename}`);
     } catch (error) {
       console.error('Download error:', error);
-      toast.error('Failed to download file');
+      throw error;
     }
   }, []);
 
-  const handleDownloadAll = useCallback(() => {
+  const downloadZipFile = useCallback((blob: Blob, filename: string) => {
     try {
-      const allTranslations = {
-        original: JSON.parse(originalJson),
-        translations,
-      };
-      
-      const content = JSON.stringify(allTranslations, null, 2);
-      handleDownload(content, 'translations_complete.json');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Download preparation error:', error);
-      toast.error('Failed to prepare download');
+      console.error('ZIP download error:', error);
+      throw error;
     }
-  }, [translations, originalJson, handleDownload]);
+  }, []);
 
+  const handleDownloadSingle = useCallback(async (language: Language) => {
+    try {
+      const content = JSON.stringify(translations[language], null, 2);
+      const filename = `${language}_translation.json`;
+      downloadFile(content, filename);
+      toast.success(`Downloaded ${languageInfo[language].name} translation`);
+    } catch (error) {
+      console.error('Single download error:', error);
+      toast.error('Failed to download translation');
+    }
+  }, [translations, downloadFile]);
 
+  const handleDownloadAll = useCallback(async () => {
+    try {
+      setIsDownloading(true);
+      const zip = new JSZip();
+      
+      // Add original JSON file
+      zip.file('original.json', JSON.stringify(JSON.parse(originalJson), null, 2));
+      
+      // Add each translation file
+      const availableLanguages = Object.keys(translations) as Language[];
+      for (const language of availableLanguages) {
+        const content = JSON.stringify(translations[language], null, 2);
+        const filename = `${language}_${languageInfo[language].name.toLowerCase()}.json`;
+        zip.file(filename, content);
+      }
+      
+      // Add a summary file
+      const summary = {
+        project: 'SuperLocalize Translation Export',
+        exportDate: new Date().toISOString(),
+        originalFile: 'original.json',
+        languages: availableLanguages.map(lang => ({
+          code: lang,
+          name: languageInfo[lang].name,
+          filename: `${lang}_${languageInfo[lang].name.toLowerCase()}.json`
+        })),
+        totalTranslations: availableLanguages.length
+      };
+      zip.file('README.json', JSON.stringify(summary, null, 2));
+      
+      // Generate ZIP blob
+      const blob = await zip.generateAsync({ 
+        type: 'blob',
+        compression: 'DEFLATE',
+        compressionOptions: { level: 6 }
+      });
+      
+      // Download ZIP file
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-');
+      const filename = `translations_${timestamp}.zip`;
+      downloadZipFile(blob, filename);
+      
+      toast.success(`Downloaded ${availableLanguages.length + 1} files as ZIP`);
+    } catch (error) {
+      console.error('Download all error:', error);
+      toast.error('Failed to create ZIP file');
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [translations, originalJson, downloadZipFile]);
 
   const availableLanguages = Object.keys(translations) as Language[];
   const hasTranslations = availableLanguages.length > 0;
@@ -148,12 +212,27 @@ export function ResultsPanel({ translations, originalJson }: ResultsPanelProps) 
 
         <motion.button
           onClick={handleDownloadAll}
-          className="flex items-center gap-2 px-3 py-2 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-900/50 text-green-700 dark:text-green-300 rounded-lg text-sm font-medium transition-colors"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          disabled={isDownloading}
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-slate-400 disabled:to-slate-500 text-white rounded-lg text-sm font-medium transition-all shadow-lg hover:shadow-xl disabled:shadow-none"
+          whileHover={!isDownloading ? { scale: 1.02, y: -1 } : {}}
+          whileTap={!isDownloading ? { scale: 0.98 } : {}}
         >
-          <Download className="w-4 h-4" />
-          Download All
+          {isDownloading ? (
+            <>
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              >
+                <Archive className="w-4 h-4" />
+              </motion.div>
+              Creating ZIP...
+            </>
+          ) : (
+            <>
+              <Archive className="w-4 h-4" />
+              Download All as ZIP
+            </>
+          )}
         </motion.button>
       </div>
 
@@ -221,21 +300,18 @@ export function ResultsPanel({ translations, originalJson }: ResultsPanelProps) 
                 </motion.button>
 
                 <motion.button
-                  onClick={() => handleDownload(
-                    JSON.stringify(translations[activeTab], null, 2),
-                    `translation_${activeTab}.json`
-                  )}
+                  onClick={() => handleDownloadSingle(activeTab as Language)}
                   className="flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded text-sm transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Download className="w-3 h-3" />
-                  Download
+                  <File className="w-3 h-3" />
+                  Download JSON
                 </motion.button>
               </div>
             </div>
 
-            {/* Monaco Editor for JSON Display */}
+            {/* Monaco Editor */}
             <div className="border border-slate-200 dark:border-slate-700 rounded-b-lg overflow-hidden">
               <Editor
                 height="400px"
@@ -245,30 +321,16 @@ export function ResultsPanel({ translations, originalJson }: ResultsPanelProps) 
                 options={{
                   readOnly: true,
                   minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
                   fontSize: 14,
                   lineNumbers: 'on',
-                  scrollBeyondLastLine: false,
-                  automaticLayout: true,
-                  tabSize: 2,
+                  roundedSelection: false,
+                  scrollbar: {
+                    vertical: 'auto',
+                    horizontal: 'auto',
+                  },
                   wordWrap: 'on',
-                  folding: true,
-                  renderLineHighlight: 'none',
-                  selectionHighlight: false,
-                  contextmenu: false,
-                  links: false,
-                  quickSuggestions: false,
-                  parameterHints: { enabled: false },
-                  hover: { enabled: false },
-                  padding: { top: 16, bottom: 16 },
                 }}
-                loading={
-                  <div className="flex items-center justify-center h-96 bg-slate-50 dark:bg-slate-800">
-                    <div className="text-center space-y-2">
-                      <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                      <span className="text-sm text-slate-600 dark:text-slate-400">Loading translation...</span>
-                    </div>
-                  </div>
-                }
               />
             </div>
           </motion.div>

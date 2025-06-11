@@ -170,9 +170,9 @@ export default function Home() {
                 { label: "Languages", value: "20+", color: "from-blue-500 to-cyan-500" },
                 { label: "AI Powered", value: "✨", color: "from-purple-500 to-pink-500" },
                 { label: "Real-time", value: "⚡", color: "from-amber-500 to-orange-500" },
-              ].map((stat, index) => (
-                <motion.div
-                  key={stat.label}
+                             ].map((stat) => (
+                 <motion.div
+                   key={stat.label}
                   className="flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-full border border-slate-200/50 dark:border-slate-700/50"
                   whileHover={{ scale: 1.05, y: -2 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}

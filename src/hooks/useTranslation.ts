@@ -326,8 +326,8 @@ const mockTranslations: Record<Language, Record<string, string>> = {
   }
 };
 
-// Google Translate API key (provided by user)
-const GOOGLE_TRANSLATE_API_KEY = 'AIzaSyDdkTJNiuG_OP6oVWoivAt1CMRPV07TZv0';
+// Google Translate API key from environment variables
+const GOOGLE_TRANSLATE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_TRANSLATE_API_KEY;
 
 export function useTranslation() {
   const [translations, setTranslations] = useState<TranslationResult>({});
@@ -372,14 +372,22 @@ export function useTranslation() {
   };
 
   const translateWithGoogleAPI = async (texts: string[], targetLanguage: Language): Promise<string[]> => {
-    // TODO: Implement Google Translate API integration
-    // This is where the actual Google Translate API call would go
-    // For now, we'll use mock data with realistic delays
+    // Check if API key is available
+    if (!GOOGLE_TRANSLATE_API_KEY) {
+      console.warn('Google Translate API key not found. Using mock translations instead.');
+      console.warn('To use real Google Translate API, add NEXT_PUBLIC_GOOGLE_TRANSLATE_API_KEY to your .env.local file');
+      
+      // Fallback to mock translations
+      return texts.map(text => {
+        const lowerText = text.toLowerCase();
+        return mockTranslations[targetLanguage][lowerText] || `[${targetLanguage}] ${text}`;
+      });
+    }
     
     const url = `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`;
     
     try {
-      // Simulated API call - replace with actual implementation
+      // Actual Google Translate API call
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -399,7 +407,7 @@ export function useTranslation() {
       const data = await response.json();
       return data.data.translations.map((t: { translatedText: string }) => t.translatedText);
     } catch (apiError) {
-      console.warn('Google Translate API not available, using mock translations:', apiError);
+      console.warn('Google Translate API call failed, using mock translations:', apiError);
       
       // Fallback to mock translations
       return texts.map(text => {
@@ -497,7 +505,7 @@ export function useTranslation() {
       setIsTranslating(false);
       setProgress({ current: 0, total: 0 });
     }
-  }, [extractTranslatableStrings, translateObject]);
+  }, []);
 
   const clearTranslations = useCallback(() => {
     setTranslations({});

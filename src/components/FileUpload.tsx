@@ -39,7 +39,7 @@ export function FileUpload({ onFileUpload }: FileUploadProps) {
         
         onFileUpload(content);
         toast.success(`Loaded ${file.name} successfully`);
-      } catch (error) {
+      } catch {
         toast.error('Invalid JSON file');
       }
     };
