@@ -327,7 +327,7 @@ const mockTranslations: Record<Language, Record<string, string>> = {
 };
 
 // Google Translate API key from environment variables
-const GOOGLE_TRANSLATE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_TRANSLATE_API_KEY;
+const GOOGLE_TRANSLATE_API_KEY = process.env.TRANSLATE_API;
 
 export function useTranslation() {
   const [translations, setTranslations] = useState<TranslationResult>({});
@@ -375,7 +375,7 @@ export function useTranslation() {
     // Check if API key is available
     if (!GOOGLE_TRANSLATE_API_KEY) {
       console.warn('Google Translate API key not found. Using mock translations instead.');
-      console.warn('To use real Google Translate API, add NEXT_PUBLIC_GOOGLE_TRANSLATE_API_KEY to your .env.local file');
+      console.warn('To use real Google Translate API, add TRANSLATE_API to your .env.local file');
       
       // Fallback to mock translations
       return texts.map(text => {
