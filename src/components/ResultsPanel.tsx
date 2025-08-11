@@ -21,7 +21,8 @@ interface ResultsPanelProps {
   originalJson: string;
 }
 
-const languageInfo = {
+const languageInfo: Record<Language, { name: string; flag: string }> = {
+  // Tier 1: Most popular languages
   es: { name: 'Spanish', flag: '🇪🇸' },
   fr: { name: 'French', flag: '🇫🇷' },
   de: { name: 'German', flag: '🇩🇪' },
@@ -30,10 +31,46 @@ const languageInfo = {
   zh: { name: 'Chinese', flag: '🇨🇳' },
   ja: { name: 'Japanese', flag: '🇯🇵' },
   ko: { name: 'Korean', flag: '🇰🇷' },
-  nl: { name: 'Dutch', flag: '🇳🇱' },
   ru: { name: 'Russian', flag: '🇷🇺' },
   ar: { name: 'Arabic', flag: '🇸🇦' },
   hi: { name: 'Hindi', flag: '🇮🇳' },
+  
+  // Tier 2: Popular languages
+  bn: { name: 'Bengali', flag: '🇧🇩' },
+  ur: { name: 'Urdu', flag: '🇵🇰' },
+  id: { name: 'Indonesian', flag: '🇮🇩' },
+  ms: { name: 'Malay', flag: '🇲🇾' },
+  ta: { name: 'Tamil', flag: '🇮🇳' },
+  te: { name: 'Telugu', flag: '🇮🇳' },
+  mr: { name: 'Marathi', flag: '🇮🇳' },
+  gu: { name: 'Gujarati', flag: '🇮🇳' },
+  pa: { name: 'Punjabi', flag: '🇮🇳' },
+  uk: { name: 'Ukrainian', flag: '🇺🇦' },
+  ro: { name: 'Romanian', flag: '🇷🇴' },
+  el: { name: 'Greek', flag: '🇬🇷' },
+  he: { name: 'Hebrew', flag: '🇮🇱' },
+  cs: { name: 'Czech', flag: '🇨🇿' },
+  hu: { name: 'Hungarian', flag: '🇭🇺' },
+  bg: { name: 'Bulgarian', flag: '🇧🇬' },
+  hr: { name: 'Croatian', flag: '🇭🇷' },
+  sk: { name: 'Slovak', flag: '🇸🇰' },
+  sl: { name: 'Slovenian', flag: '🇸🇮' },
+  lt: { name: 'Lithuanian', flag: '🇱🇹' },
+  lv: { name: 'Latvian', flag: '🇱🇻' },
+  et: { name: 'Estonian', flag: '🇪🇪' },
+  sw: { name: 'Swahili', flag: '🇰🇪' },
+  am: { name: 'Amharic', flag: '🇪🇹' },
+  yo: { name: 'Yoruba', flag: '🇳🇬' },
+  ig: { name: 'Igbo', flag: '🇳🇬' },
+  ha: { name: 'Hausa', flag: '🇳🇬' },
+  fa: { name: 'Persian', flag: '🇮🇷' },
+  uz: { name: 'Uzbek', flag: '🇺🇿' },
+  kk: { name: 'Kazakh', flag: '🇰🇿' },
+  az: { name: 'Azerbaijani', flag: '🇦🇿' },
+  ky: { name: 'Kyrgyz', flag: '🇰🇬' },
+  
+  // Tier 3: Additional languages
+  nl: { name: 'Dutch', flag: '🇳🇱' },
   sv: { name: 'Swedish', flag: '🇸🇪' },
   da: { name: 'Danish', flag: '🇩🇰' },
   no: { name: 'Norwegian', flag: '🇳🇴' },
@@ -42,6 +79,29 @@ const languageInfo = {
   tr: { name: 'Turkish', flag: '🇹🇷' },
   th: { name: 'Thai', flag: '🇹🇭' },
   vi: { name: 'Vietnamese', flag: '🇻🇳' },
+  ca: { name: 'Catalan', flag: '🇪🇸' },
+  eu: { name: 'Basque', flag: '🇪🇸' },
+  gl: { name: 'Galician', flag: '🇪🇸' },
+  is: { name: 'Icelandic', flag: '🇮🇸' },
+  mt: { name: 'Maltese', flag: '🇲🇹' },
+  cy: { name: 'Welsh', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿' },
+  ga: { name: 'Irish', flag: '🇮🇪' },
+  sq: { name: 'Albanian', flag: '🇦🇱' },
+  mk: { name: 'Macedonian', flag: '🇲🇰' },
+  be: { name: 'Belarusian', flag: '🇧🇾' },
+  ka: { name: 'Georgian', flag: '🇬🇪' },
+  hy: { name: 'Armenian', flag: '🇦🇲' },
+  ne: { name: 'Nepali', flag: '🇳🇵' },
+  si: { name: 'Sinhala', flag: '🇱🇰' },
+  my: { name: 'Myanmar', flag: '🇲🇲' },
+  km: { name: 'Khmer', flag: '🇰🇭' },
+  lo: { name: 'Lao', flag: '🇱🇦' },
+  mn: { name: 'Mongolian', flag: '🇲🇳' },
+  bo: { name: 'Tibetan', flag: '🏔️' },
+  dz: { name: 'Dzongkha', flag: '🇧🇹' },
+  ml: { name: 'Malayalam', flag: '🇮🇳' },
+  kn: { name: 'Kannada', flag: '🇮🇳' },
+  or: { name: 'Odia', flag: '🇮🇳' },
 };
 
 export function ResultsPanel({ translations, originalJson }: ResultsPanelProps) {
@@ -338,4 +398,4 @@ export function ResultsPanel({ translations, originalJson }: ResultsPanelProps) 
       </AnimatePresence>
     </motion.div>
   );
-} 
+}

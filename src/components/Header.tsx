@@ -2,11 +2,14 @@
 
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, Languages, Sparkles, Github, ExternalLink } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
+import { Sun, Moon, Languages, Sparkles, Github, ExternalLink, Home, Code } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export function Header() {
   const { theme, setTheme } = useTheme();
+  const router = useRouter();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -63,6 +66,37 @@ export function Header() {
             </p>
           </div>
         </motion.div>
+
+        {/* Navigation Links */}
+        <div className="hidden md:flex items-center gap-2">
+          <motion.button
+            onClick={() => router.push('/')}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
+              pathname === '/' 
+                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-sm' 
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100/50 dark:hover:bg-slate-800/50'
+            }`}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Home className="w-4 h-4" />
+            <span>Home</span>
+          </motion.button>
+          
+          <motion.button
+            onClick={() => router.push('/translator')}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
+              pathname === '/translator' 
+                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-sm' 
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100/50 dark:hover:bg-slate-800/50'
+            }`}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Code className="w-4 h-4" />
+            <span>Translator</span>
+          </motion.button>
+        </div>
 
         {/* Navigation Actions */}
         <div className="flex items-center gap-3">
@@ -128,4 +162,4 @@ export function Header() {
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-600 to-transparent opacity-50"></div>
     </motion.header>
   );
-} 
+}

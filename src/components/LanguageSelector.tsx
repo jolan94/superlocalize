@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Language, LanguageInfo } from '@/types';
-import { Globe, Check, Search, X, Filter, Star } from 'lucide-react';
+import { Globe, Check, Search, X, Filter, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useMemo } from 'react';
 
 interface LanguageSelectorProps {
@@ -10,38 +10,96 @@ interface LanguageSelectorProps {
   onLanguageChange: (languages: Language[]) => void;
 }
 
-const languageInfo: Record<Language, LanguageInfo & { popular?: boolean; region: string }> = {
-  // Popular languages
-  es: { code: 'es', name: 'Spanish', flag: '🇪🇸', popular: true, region: 'Europe' },
-  fr: { code: 'fr', name: 'French', flag: '🇫🇷', popular: true, region: 'Europe' },
-  de: { code: 'de', name: 'German', flag: '🇩🇪', popular: true, region: 'Europe' },
-  it: { code: 'it', name: 'Italian', flag: '🇮🇹', popular: true, region: 'Europe' },
-  pt: { code: 'pt', name: 'Portuguese', flag: '🇵🇹', popular: true, region: 'Europe' },
-  zh: { code: 'zh', name: 'Chinese', flag: '🇨🇳', popular: true, region: 'Asia' },
-  ja: { code: 'ja', name: 'Japanese', flag: '🇯🇵', popular: true, region: 'Asia' },
-  ko: { code: 'ko', name: 'Korean', flag: '🇰🇷', popular: true, region: 'Asia' },
-  ru: { code: 'ru', name: 'Russian', flag: '🇷🇺', popular: true, region: 'Europe' },
-  ar: { code: 'ar', name: 'Arabic', flag: '🇸🇦', popular: true, region: 'Middle East' },
-  hi: { code: 'hi', name: 'Hindi', flag: '🇮🇳', popular: true, region: 'Asia' },
-  
-  // Additional languages
-  nl: { code: 'nl', name: 'Dutch', flag: '🇳🇱', region: 'Europe' },
-  sv: { code: 'sv', name: 'Swedish', flag: '🇸🇪', region: 'Europe' },
-  da: { code: 'da', name: 'Danish', flag: '🇩🇰', region: 'Europe' },
-  no: { code: 'no', name: 'Norwegian', flag: '🇳🇴', region: 'Europe' },
-  fi: { code: 'fi', name: 'Finnish', flag: '🇫🇮', region: 'Europe' },
-  pl: { code: 'pl', name: 'Polish', flag: '🇵🇱', region: 'Europe' },
-  tr: { code: 'tr', name: 'Turkish', flag: '🇹🇷', region: 'Europe' },
-  th: { code: 'th', name: 'Thai', flag: '🇹🇭', region: 'Asia' },
-  vi: { code: 'vi', name: 'Vietnamese', flag: '🇻🇳', region: 'Asia' },
+const languageInfo: Record<Language, LanguageInfo & { tier: 1 | 2 | 3; region: string; speakers?: string }> = {
+  // Tier 1: Most popular languages (shown by default)
+  es: { code: 'es', name: 'Spanish', flag: '🇪🇸', tier: 1, region: 'Europe', speakers: '500M+' },
+  fr: { code: 'fr', name: 'French', flag: '🇫🇷', tier: 1, region: 'Europe', speakers: '280M+' },
+  de: { code: 'de', name: 'German', flag: '🇩🇪', tier: 1, region: 'Europe', speakers: '100M+' },
+  it: { code: 'it', name: 'Italian', flag: '🇮🇹', tier: 1, region: 'Europe', speakers: '65M+' },
+  pt: { code: 'pt', name: 'Portuguese', flag: '🇵🇹', tier: 1, region: 'Europe', speakers: '260M+' },
+  zh: { code: 'zh', name: 'Chinese', flag: '🇨🇳', tier: 1, region: 'Asia', speakers: '1.1B+' },
+  ja: { code: 'ja', name: 'Japanese', flag: '🇯🇵', tier: 1, region: 'Asia', speakers: '125M+' },
+  ko: { code: 'ko', name: 'Korean', flag: '🇰🇷', tier: 1, region: 'Asia', speakers: '77M+' },
+  ru: { code: 'ru', name: 'Russian', flag: '🇷🇺', tier: 1, region: 'Europe', speakers: '258M+' },
+  ar: { code: 'ar', name: 'Arabic', flag: '🇸🇦', tier: 1, region: 'Middle East', speakers: '422M+' },
+  hi: { code: 'hi', name: 'Hindi', flag: '🇮🇳', tier: 1, region: 'Asia', speakers: '602M+' },
+
+  // Tier 2: Popular languages (expandable section)
+  bn: { code: 'bn', name: 'Bengali', flag: '🇧🇩', tier: 2, region: 'Asia', speakers: '265M+' },
+  ur: { code: 'ur', name: 'Urdu', flag: '🇵🇰', tier: 2, region: 'Asia', speakers: '170M+' },
+  id: { code: 'id', name: 'Indonesian', flag: '🇮🇩', tier: 2, region: 'Asia', speakers: '199M+' },
+  ms: { code: 'ms', name: 'Malay', flag: '🇲🇾', tier: 2, region: 'Asia', speakers: '77M+' },
+  ta: { code: 'ta', name: 'Tamil', flag: '🇮🇳', tier: 2, region: 'Asia', speakers: '75M+' },
+  te: { code: 'te', name: 'Telugu', flag: '🇮🇳', tier: 2, region: 'Asia', speakers: '74M+' },
+  mr: { code: 'mr', name: 'Marathi', flag: '🇮🇳', tier: 2, region: 'Asia', speakers: '72M+' },
+  gu: { code: 'gu', name: 'Gujarati', flag: '🇮🇳', tier: 2, region: 'Asia', speakers: '56M+' },
+  pa: { code: 'pa', name: 'Punjabi', flag: '🇮🇳', tier: 2, region: 'Asia', speakers: '113M+' },
+  uk: { code: 'uk', name: 'Ukrainian', flag: '🇺🇦', tier: 2, region: 'Europe', speakers: '40M+' },
+  ro: { code: 'ro', name: 'Romanian', flag: '🇷🇴', tier: 2, region: 'Europe', speakers: '24M+' },
+  el: { code: 'el', name: 'Greek', flag: '🇬🇷', tier: 2, region: 'Europe', speakers: '13M+' },
+  he: { code: 'he', name: 'Hebrew', flag: '🇮🇱', tier: 2, region: 'Middle East', speakers: '9M+' },
+  cs: { code: 'cs', name: 'Czech', flag: '🇨🇿', tier: 2, region: 'Europe', speakers: '10M+' },
+  hu: { code: 'hu', name: 'Hungarian', flag: '🇭🇺', tier: 2, region: 'Europe', speakers: '13M+' },
+  bg: { code: 'bg', name: 'Bulgarian', flag: '🇧🇬', tier: 2, region: 'Europe', speakers: '9M+' },
+  hr: { code: 'hr', name: 'Croatian', flag: '🇭🇷', tier: 2, region: 'Europe', speakers: '5M+' },
+  sk: { code: 'sk', name: 'Slovak', flag: '🇸🇰', tier: 2, region: 'Europe', speakers: '5M+' },
+  sl: { code: 'sl', name: 'Slovenian', flag: '🇸🇮', tier: 2, region: 'Europe', speakers: '2M+' },
+  lt: { code: 'lt', name: 'Lithuanian', flag: '🇱🇹', tier: 2, region: 'Europe', speakers: '3M+' },
+  lv: { code: 'lv', name: 'Latvian', flag: '🇱🇻', tier: 2, region: 'Europe', speakers: '2M+' },
+  et: { code: 'et', name: 'Estonian', flag: '🇪🇪', tier: 2, region: 'Europe', speakers: '1M+' },
+  sw: { code: 'sw', name: 'Swahili', flag: '🇰🇪', tier: 2, region: 'Africa', speakers: '16M+' },
+  am: { code: 'am', name: 'Amharic', flag: '🇪🇹', tier: 2, region: 'Africa', speakers: '32M+' },
+  yo: { code: 'yo', name: 'Yoruba', flag: '🇳🇬', tier: 2, region: 'Africa', speakers: '20M+' },
+  ig: { code: 'ig', name: 'Igbo', flag: '🇳🇬', tier: 2, region: 'Africa', speakers: '24M+' },
+  ha: { code: 'ha', name: 'Hausa', flag: '🇳🇬', tier: 2, region: 'Africa', speakers: '70M+' },
+  fa: { code: 'fa', name: 'Persian', flag: '🇮🇷', tier: 2, region: 'Middle East', speakers: '70M+' },
+  uz: { code: 'uz', name: 'Uzbek', flag: '🇺🇿', tier: 2, region: 'Asia', speakers: '34M+' },
+  kk: { code: 'kk', name: 'Kazakh', flag: '🇰🇿', tier: 2, region: 'Asia', speakers: '13M+' },
+  az: { code: 'az', name: 'Azerbaijani', flag: '🇦🇿', tier: 2, region: 'Asia', speakers: '23M+' },
+  ky: { code: 'ky', name: 'Kyrgyz', flag: '🇰🇬', tier: 2, region: 'Asia', speakers: '4M+' },
+
+  // Tier 3: Additional languages (expandable section)
+  nl: { code: 'nl', name: 'Dutch', flag: '🇳🇱', tier: 3, region: 'Europe', speakers: '24M+' },
+  sv: { code: 'sv', name: 'Swedish', flag: '🇸🇪', tier: 3, region: 'Europe', speakers: '10M+' },
+  da: { code: 'da', name: 'Danish', flag: '🇩🇰', tier: 3, region: 'Europe', speakers: '6M+' },
+  no: { code: 'no', name: 'Norwegian', flag: '🇳🇴', tier: 3, region: 'Europe', speakers: '5M+' },
+  fi: { code: 'fi', name: 'Finnish', flag: '🇫🇮', tier: 3, region: 'Europe', speakers: '5M+' },
+  pl: { code: 'pl', name: 'Polish', flag: '🇵🇱', tier: 3, region: 'Europe', speakers: '45M+' },
+  tr: { code: 'tr', name: 'Turkish', flag: '🇹🇷', tier: 3, region: 'Europe', speakers: '88M+' },
+  th: { code: 'th', name: 'Thai', flag: '🇹🇭', tier: 3, region: 'Asia', speakers: '61M+' },
+  vi: { code: 'vi', name: 'Vietnamese', flag: '🇻🇳', tier: 3, region: 'Asia', speakers: '85M+' },
+  ca: { code: 'ca', name: 'Catalan', flag: '🇪🇸', tier: 3, region: 'Europe', speakers: '10M+' },
+  eu: { code: 'eu', name: 'Basque', flag: '🇪🇸', tier: 3, region: 'Europe', speakers: '750K+' },
+  gl: { code: 'gl', name: 'Galician', flag: '🇪🇸', tier: 3, region: 'Europe', speakers: '2M+' },
+  is: { code: 'is', name: 'Icelandic', flag: '🇮🇸', tier: 3, region: 'Europe', speakers: '314K+' },
+  mt: { code: 'mt', name: 'Maltese', flag: '🇲🇹', tier: 3, region: 'Europe', speakers: '520K+' },
+  cy: { code: 'cy', name: 'Welsh', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿', tier: 3, region: 'Europe', speakers: '562K+' },
+  ga: { code: 'ga', name: 'Irish', flag: '🇮🇪', tier: 3, region: 'Europe', speakers: '170K+' },
+  sq: { code: 'sq', name: 'Albanian', flag: '🇦🇱', tier: 3, region: 'Europe', speakers: '6M+' },
+  mk: { code: 'mk', name: 'Macedonian', flag: '🇲🇰', tier: 3, region: 'Europe', speakers: '2M+' },
+  be: { code: 'be', name: 'Belarusian', flag: '🇧🇾', tier: 3, region: 'Europe', speakers: '5M+' },
+  ka: { code: 'ka', name: 'Georgian', flag: '🇬🇪', tier: 3, region: 'Asia', speakers: '4M+' },
+  hy: { code: 'hy', name: 'Armenian', flag: '🇦🇲', tier: 3, region: 'Asia', speakers: '7M+' },
+  ne: { code: 'ne', name: 'Nepali', flag: '🇳🇵', tier: 3, region: 'Asia', speakers: '16M+' },
+  si: { code: 'si', name: 'Sinhala', flag: '🇱🇰', tier: 3, region: 'Asia', speakers: '17M+' },
+  my: { code: 'my', name: 'Burmese', flag: '🇲🇲', tier: 3, region: 'Asia', speakers: '33M+' },
+  km: { code: 'km', name: 'Khmer', flag: '🇰🇭', tier: 3, region: 'Asia', speakers: '16M+' },
+  lo: { code: 'lo', name: 'Lao', flag: '🇱🇦', tier: 3, region: 'Asia', speakers: '7M+' },
+  mn: { code: 'mn', name: 'Mongolian', flag: '🇲🇳', tier: 3, region: 'Asia', speakers: '5M+' },
+  bo: { code: 'bo', name: 'Tibetan', flag: '🇨🇳', tier: 3, region: 'Asia', speakers: '1M+' },
+  dz: { code: 'dz', name: 'Dzongkha', flag: '🇧🇹', tier: 3, region: 'Asia', speakers: '171K+' },
+  ml: { code: 'ml', name: 'Malayalam', flag: '🇮🇳', tier: 3, region: 'Asia', speakers: '34M+' },
+  kn: { code: 'kn', name: 'Kannada', flag: '🇮🇳', tier: 3, region: 'Asia', speakers: '44M+' },
+  or: { code: 'or', name: 'Odia', flag: '🇮🇳', tier: 3, region: 'Asia', speakers: '38M+' },
 };
 
-const regions = ['All', 'Europe', 'Asia', 'Middle East'];
+const regions = ['All', 'Europe', 'Asia', 'Middle East', 'Africa'];
 
 export function LanguageSelector({ selectedLanguages, onLanguageChange }: LanguageSelectorProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
   const [showOnlyPopular, setShowOnlyPopular] = useState(false);
+  const [showExpandedLanguages, setShowExpandedLanguages] = useState(false);
 
   const filteredLanguages = useMemo(() => {
     let languages = Object.values(languageInfo);
@@ -59,12 +117,17 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
       languages = languages.filter(lang => lang.region === selectedRegion);
     }
 
-    // Filter by popularity
+    // Filter by popularity (tier 1 only)
     if (showOnlyPopular) {
-      languages = languages.filter(lang => lang.popular);
+      languages = languages.filter(lang => lang.tier === 1);
     }
 
-    // Sort: selected first, then popular, then alphabetical
+    // Filter by tier visibility (if not searching and not showing expanded)
+    if (!searchQuery && !showExpandedLanguages && !showOnlyPopular) {
+      languages = languages.filter(lang => lang.tier === 1);
+    }
+
+    // Sort: selected first, then by tier, then alphabetical
     return languages.sort((a, b) => {
       const aSelected = selectedLanguages.includes(a.code);
       const bSelected = selectedLanguages.includes(b.code);
@@ -72,12 +135,11 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
       if (aSelected && !bSelected) return -1;
       if (!aSelected && bSelected) return 1;
       
-      if (a.popular && !b.popular) return -1;
-      if (!a.popular && b.popular) return 1;
+      if (a.tier !== b.tier) return a.tier - b.tier;
       
       return a.name.localeCompare(b.name);
     });
-  }, [searchQuery, selectedRegion, showOnlyPopular, selectedLanguages]);
+  }, [searchQuery, selectedRegion, showOnlyPopular, selectedLanguages, showExpandedLanguages]);
 
   const handleLanguageToggle = (language: Language) => {
     if (selectedLanguages.includes(language)) {
@@ -98,7 +160,7 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
     }
   };
 
-  const popularLanguages = Object.values(languageInfo).filter(lang => lang.popular);
+  const popularLanguages = Object.values(languageInfo).filter(lang => lang.tier === 1);
   const areAllPopularSelected = popularLanguages.every(lang => selectedLanguages.includes(lang.code));
 
   const handleSelectPopular = () => {
@@ -141,7 +203,7 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
             whileTap={{ scale: 0.98 }}
           >
             <Star className="w-4 h-4" />
-            {areAllPopularSelected ? 'Unselect' : 'Select'} Popular
+            {areAllPopularSelected ? 'Unselect' : 'Select'} Most Popular
           </motion.button>
         </div>
       </div>
@@ -202,8 +264,23 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
             }`}
           >
             <Star className="w-3 h-3" />
-            Popular Only
+            Most Popular Only
           </button>
+
+          {/* Show More Languages Toggle */}
+          {!searchQuery && !showOnlyPopular && (
+            <button
+              onClick={() => setShowExpandedLanguages(!showExpandedLanguages)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                showExpandedLanguages
+                  ? 'bg-blue-500 text-white shadow-sm'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
+              }`}
+            >
+              {showExpandedLanguages ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              {showExpandedLanguages ? 'Show Less' : 'Show More Languages'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -267,7 +344,7 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
                         <span className="text-2xl" role="img" aria-label={lang.name}>
                           {lang.flag}
                         </span>
-                        {lang.popular && (
+                        {lang.tier === 1 && (
                           <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
                             <Star className="w-1.5 h-1.5 text-white" />
                           </div>
@@ -289,6 +366,14 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
                           <p className="text-xs text-slate-500 dark:text-slate-400">
                             {lang.region}
                           </p>
+                          {lang.speakers && (
+                            <>
+                              <span className="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
+                              <p className="text-xs text-slate-500 dark:text-slate-400">
+                                {lang.speakers}
+                              </p>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -363,4 +448,4 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
       </div>
     </motion.div>
   );
-} 
+}

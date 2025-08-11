@@ -2,8 +2,8 @@ import { useState, useCallback } from 'react';
 import { Language, TranslationResult, TranslationProgress } from '@/types';
 import toast from 'react-hot-toast';
 
-// Mock translation data for realistic simulation
-const mockTranslations: Record<Language, Record<string, string>> = {
+// Mock translation data for realistic simulation (partial set)
+const mockTranslations: Partial<Record<Language, Record<string, string>>> = {
   es: {
     'welcome': 'Bienvenido a nuestra aplicación',
     'login': 'Iniciar sesión para continuar',
@@ -355,7 +355,7 @@ export function useTranslation() {
     return !technicalPatterns.some(pattern => pattern.test(value.trim()));
   };
 
-  const extractTranslatableStrings = (obj: Record<string, unknown>, prefix = ''): string[] => {
+  const extractTranslatableStrings = useCallback((obj: Record<string, unknown>, prefix = ''): string[] => {
     const strings: string[] = [];
     
     for (const [key, value] of Object.entries(obj)) {
@@ -369,7 +369,7 @@ export function useTranslation() {
     }
     
     return strings;
-  };
+  }, []);
 
   const translateWithGoogleAPI = async (texts: string[], targetLanguage: Language): Promise<string[]> => {
     // Check if API key is available
@@ -380,7 +380,8 @@ export function useTranslation() {
       // Fallback to mock translations
       return texts.map(text => {
         const lowerText = text.toLowerCase();
-        return mockTranslations[targetLanguage][lowerText] || `[${targetLanguage}] ${text}`;
+        const languageTranslations = mockTranslations[targetLanguage];
+        return languageTranslations?.[lowerText] || `[${targetLanguage}] ${text}`;
       });
     }
     
@@ -412,12 +413,13 @@ export function useTranslation() {
       // Fallback to mock translations
       return texts.map(text => {
         const lowerText = text.toLowerCase();
-        return mockTranslations[targetLanguage][lowerText] || `[${targetLanguage}] ${text}`;
+        const languageTranslations = mockTranslations[targetLanguage];
+        return languageTranslations?.[lowerText] || `[${targetLanguage}] ${text}`;
       });
     }
   };
 
-  const translateObject = async (obj: unknown, targetLanguage: Language, translatedStrings: Map<string, string>): Promise<unknown> => {
+  const translateObject = useCallback(async (obj: unknown, targetLanguage: Language, translatedStrings: Map<string, string>): Promise<unknown> => {
     if (typeof obj === 'string') {
       if (shouldTranslateValue(obj)) {
         return translatedStrings.get(obj) || obj;
@@ -442,7 +444,7 @@ export function useTranslation() {
     }
     
     return obj;
-  };
+  }, []);
 
   const translateJson = useCallback(async (jsonString: string, targetLanguages: Language[]) => {
     try {
@@ -505,7 +507,7 @@ export function useTranslation() {
       setIsTranslating(false);
       setProgress({ current: 0, total: 0 });
     }
-  }, []);
+  }, [extractTranslatableStrings, translateObject]);
 
   const clearTranslations = useCallback(() => {
     setTranslations({});
@@ -520,4 +522,4 @@ export function useTranslation() {
     translateJson,
     clearTranslations,
   };
-} 
+}
