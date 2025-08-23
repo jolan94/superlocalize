@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { AiTranslationProgress } from '@/types';
+import type { AiTranslationProgress } from '@/types';
 import { Brain, Sparkles } from 'lucide-react';
 
 interface AiTranslationProgressProps {

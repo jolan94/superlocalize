@@ -99,7 +99,7 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
   const [showOnlyPopular, setShowOnlyPopular] = useState(false);
-  const [showExpandedLanguages, setShowExpandedLanguages] = useState(false);
+  const [showExpandedLanguages, setShowExpandedLanguages] = useState(true);
 
   const filteredLanguages = useMemo(() => {
     let languages = Object.values(languageInfo);
@@ -124,7 +124,7 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
 
     // Filter by tier visibility (if not searching and not showing expanded)
     if (!searchQuery && !showExpandedLanguages && !showOnlyPopular) {
-      languages = languages.filter(lang => lang.tier === 1);
+      languages = languages.filter(lang => lang.tier <= 2); // Show tier 1 and 2 by default
     }
 
     // Sort: selected first, then by tier, then alphabetical
@@ -285,7 +285,7 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
       </div>
 
       {/* Language Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-6">
         <AnimatePresence mode="popLayout">
           {filteredLanguages.map((lang, index) => {
             const isSelected = selectedLanguages.includes(lang.code);
@@ -298,29 +298,29 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ 
-                  delay: index * 0.05, 
-                  duration: 0.2,
+                  delay: index * 0.02, 
+                  duration: 0.15,
                   type: "spring",
-                  stiffness: 400,
-                  damping: 25
+                  stiffness: 200,
+                  damping: 20
                 }}
                 className="relative group"
               >
                 <motion.button
                   onClick={() => handleLanguageToggle(lang.code)}
-                  className={`w-full p-4 rounded-xl border-2 transition-all duration-300 group-hover:scale-[1.02] ${
+                  className={`w-full p-2 rounded-lg border transition-all duration-200 group-hover:scale-[1.01] ${
                     isSelected
-                      ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 shadow-lg shadow-blue-500/20'
-                      : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 bg-white/50 dark:bg-slate-700/30 hover:bg-white/80 dark:hover:bg-slate-700/50'
+                      ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20 shadow-sm'
+                      : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 bg-white/70 dark:bg-slate-700/30 hover:bg-white dark:hover:bg-slate-700/50'
                   }`}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     {/* Custom Checkbox */}
-                    <div className={`relative w-5 h-5 rounded-full border-2 transition-all duration-300 ${
+                    <div className={`relative w-4 h-4 rounded-full border transition-all duration-200 ${
                       isSelected
-                        ? 'border-blue-500 bg-blue-500 shadow-lg shadow-blue-500/30'
+                        ? 'border-blue-500 bg-blue-500'
                         : 'border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-600 group-hover:border-blue-400'
                     }`}>
                       <AnimatePresence>
@@ -332,49 +332,35 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
                             transition={{ duration: 0.2 }}
                             className="absolute inset-0 flex items-center justify-center"
                           >
-                            <Check className="w-3 h-3 text-white" />
+                            <Check className="w-2.5 h-2.5 text-white" />
                           </motion.div>
                         )}
                       </AnimatePresence>
                     </div>
 
                     {/* Flag and Language Info */}
-                    <div className="flex items-center gap-3 flex-1 text-left">
+                    <div className="flex items-center gap-2 flex-1 text-left">
                       <div className="relative">
-                        <span className="text-2xl" role="img" aria-label={lang.name}>
+                        <span className="text-lg" role="img" aria-label={lang.name}>
                           {lang.flag}
                         </span>
                         {lang.tier === 1 && (
-                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
-                            <Star className="w-1.5 h-1.5 text-white" />
+                          <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-400 rounded-full flex items-center justify-center">
+                            <Star className="w-1 h-1 text-white" />
                           </div>
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className={`font-semibold text-sm transition-colors truncate ${
+                        <p className={`font-medium text-xs transition-colors truncate ${
                           isSelected
                             ? 'text-blue-700 dark:text-blue-300'
                             : 'text-slate-700 dark:text-slate-300'
                         }`}>
                           {lang.name}
                         </p>
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs text-slate-500 dark:text-slate-400 uppercase font-mono">
-                            {lang.code}
-                          </p>
-                          <span className="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">
-                            {lang.region}
-                          </p>
-                          {lang.speakers && (
-                            <>
-                              <span className="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
-                              <p className="text-xs text-slate-500 dark:text-slate-400">
-                                {lang.speakers}
-                              </p>
-                            </>
-                          )}
-                        </div>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-mono">
+                          {lang.code}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -384,13 +370,11 @@ export function LanguageSelector({ selectedLanguages, onLanguageChange }: Langua
                 <AnimatePresence>
                   {isSelected && (
                     <motion.div
-                      initial={{ scale: 0.8, opacity: 0 }}
+                      initial={{ scale: 0.95, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      className="absolute inset-0 rounded-xl border-2 border-blue-400 pointer-events-none"
-                      style={{
-                        boxShadow: '0 0 0 4px rgba(59, 130, 246, 0.1), 0 0 20px rgba(59, 130, 246, 0.2)',
-                      }}
+                      exit={{ scale: 0.95, opacity: 0 }}
+                      transition={{ duration: 0.1 }}
+                      className="absolute inset-0 rounded-lg border border-blue-300 pointer-events-none"
                     />
                   )}
                 </AnimatePresence>

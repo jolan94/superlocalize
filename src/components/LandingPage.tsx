@@ -79,12 +79,12 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 overflow-hidden" suppressHydrationWarning={true}>
       {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-3/4 left-1/3 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" suppressHydrationWarning={true}>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" suppressHydrationWarning={true}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" suppressHydrationWarning={true}></div>
+        <div className="absolute top-3/4 left-1/3 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-500" suppressHydrationWarning={true}></div>
       </div>
 
       <main className="container mx-auto px-6 py-16 max-w-7xl relative z-10">
@@ -93,13 +93,14 @@ export function LandingPage() {
           initial="hidden"
           animate="show"
           className="space-y-24"
+          suppressHydrationWarning={true}
         >
           {/* Hero Section */}
           <motion.section 
             variants={fadeInUp}
             className="text-center space-y-8 relative"
           >
-            <div className="relative inline-block">
+            <div className="relative inline-block" suppressHydrationWarning={true}>
               <motion.h1 
                 className="text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent leading-tight"
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -144,6 +145,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9, duration: 0.5 }}
+              suppressHydrationWarning={true}
             >
               <motion.button
                 onClick={handleGetStarted}
@@ -155,7 +157,7 @@ export function LandingPage() {
                   Start Translating Free
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" suppressHydrationWarning={true}></div>
               </motion.button>
               
               <motion.button
@@ -173,6 +175,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.1, duration: 0.5 }}
+              suppressHydrationWarning={true}
             >
               {stats.map((stat, index) => (
                 <motion.div
@@ -182,10 +185,10 @@ export function LandingPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.1 + index * 0.1, duration: 0.5 }}
                 >
-                  <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" suppressHydrationWarning={true}>
                     {stat.value}
                   </div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  <div className="text-sm text-slate-500 dark:text-slate-400 mt-1" suppressHydrationWarning={true}>
                     {stat.label}
                   </div>
                 </motion.div>
@@ -198,7 +201,7 @@ export function LandingPage() {
             variants={fadeInUp}
             className="space-y-12"
           >
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-4" suppressHydrationWarning={true}>
               <h2 className="text-4xl md:text-5xl font-bold text-slate-800 dark:text-slate-200">
                 Powerful Features
               </h2>
@@ -207,7 +210,7 @@ export function LandingPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" suppressHydrationWarning={true}>
               {features.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
@@ -219,7 +222,7 @@ export function LandingPage() {
                     transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
                     whileHover={{ scale: 1.05, y: -5 }}
                   >
-                    <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`} suppressHydrationWarning={true}>
                       <Icon className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-3">
@@ -239,9 +242,9 @@ export function LandingPage() {
             variants={fadeInUp}
             className="space-y-12"
           >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <div className="space-y-8">
-                <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center" suppressHydrationWarning={true}>
+              <div className="space-y-8" suppressHydrationWarning={true}>
+                <div className="space-y-4" suppressHydrationWarning={true}>
                   <h2 className="text-4xl md:text-5xl font-bold text-slate-800 dark:text-slate-200">
                     Why Choose SuperLocalize?
                   </h2>
@@ -250,7 +253,7 @@ export function LandingPage() {
                   </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4" suppressHydrationWarning={true}>
                   {benefits.map((benefit, index) => (
                     <motion.div
                       key={benefit}
@@ -278,32 +281,32 @@ export function LandingPage() {
                 </motion.button>
               </div>
 
-              <div className="relative">
+              <div className="relative" suppressHydrationWarning={true}>
                 <motion.div
                   className="relative p-8 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 shadow-2xl"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.5, duration: 0.6 }}
                 >
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div className="space-y-4" suppressHydrationWarning={true}>
+                    <div className="flex items-center gap-3" suppressHydrationWarning={true}>
+                      <div className="w-3 h-3 bg-red-500 rounded-full" suppressHydrationWarning={true}></div>
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full" suppressHydrationWarning={true}></div>
+                      <div className="w-3 h-3 bg-green-500 rounded-full" suppressHydrationWarning={true}></div>
                       <span className="text-sm text-slate-500 dark:text-slate-400 ml-2">JSON Translator</span>
                     </div>
-                    <div className="bg-slate-900 dark:bg-slate-950 rounded-lg p-4 font-mono text-sm">
-                      <div className="text-green-400">&#123;</div>
-                       <div className="ml-4 text-blue-400">&quot;welcome&quot;: &quot;Welcome to our app&quot;,</div>
-                       <div className="ml-4 text-blue-400">&quot;login&quot;: &quot;Sign in to continue&quot;,</div>
-                       <div className="ml-4 text-blue-400">&quot;submit&quot;: &quot;Submit form&quot;</div>
-                       <div className="text-green-400">&#125;</div>
-                       <div className="mt-4 text-purple-400">↓ Translating to Spanish...</div>
-                       <div className="mt-2 text-green-400">&#123;</div>
-                       <div className="ml-4 text-blue-400">&quot;welcome&quot;: &quot;Bienvenido a nuestra app&quot;,</div>
-                       <div className="ml-4 text-blue-400">&quot;login&quot;: &quot;Iniciar sesión para continuar&quot;,</div>
-                       <div className="ml-4 text-blue-400">&quot;submit&quot;: &quot;Enviar formulario&quot;</div>
-                       <div className="text-green-400">&#125;</div>
+                    <div className="bg-slate-900 dark:bg-slate-950 rounded-lg p-4 font-mono text-sm" suppressHydrationWarning={true}>
+                      <div className="text-green-400" suppressHydrationWarning={true}>&#123;</div>
+                       <div className="ml-4 text-blue-400" suppressHydrationWarning={true}>&quot;welcome&quot;: &quot;Welcome to our app&quot;,</div>
+                       <div className="ml-4 text-blue-400" suppressHydrationWarning={true}>&quot;login&quot;: &quot;Sign in to continue&quot;,</div>
+                       <div className="ml-4 text-blue-400" suppressHydrationWarning={true}>&quot;submit&quot;: &quot;Submit form&quot;</div>
+                       <div className="text-green-400" suppressHydrationWarning={true}>&#125;</div>
+                       <div className="mt-4 text-purple-400" suppressHydrationWarning={true}>↓ Translating to Spanish...</div>
+                       <div className="mt-2 text-green-400" suppressHydrationWarning={true}>&#123;</div>
+                       <div className="ml-4 text-blue-400" suppressHydrationWarning={true}>&quot;welcome&quot;: &quot;Bienvenido a nuestra app&quot;,</div>
+                       <div className="ml-4 text-blue-400" suppressHydrationWarning={true}>&quot;login&quot;: &quot;Iniciar sesión para continuar&quot;,</div>
+                       <div className="ml-4 text-blue-400" suppressHydrationWarning={true}>&quot;submit&quot;: &quot;Enviar formulario&quot;</div>
+                       <div className="text-green-400" suppressHydrationWarning={true}>&#125;</div>
                     </div>
                   </div>
                 </motion.div>
@@ -333,7 +336,7 @@ export function LandingPage() {
             variants={fadeInUp}
             className="text-center space-y-8 py-16"
           >
-            <div className="space-y-4">
+            <div className="space-y-4" suppressHydrationWarning={true}>
               <h2 className="text-4xl md:text-5xl font-bold text-slate-800 dark:text-slate-200">
                 Ready to Go Global?
               </h2>
@@ -353,7 +356,7 @@ export function LandingPage() {
                 Start Translating Now
                 <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" suppressHydrationWarning={true}></div>
             </motion.button>
 
             <p className="text-sm text-slate-500 dark:text-slate-400">

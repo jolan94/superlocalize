@@ -8,10 +8,10 @@ import { LanguageSelector } from '@/components/LanguageSelector';
 import { ResultsPanel } from '@/components/ResultsPanel';
 import { ToneSelector } from '@/components/ToneSelector';
 import { AiTranslationProgress } from '@/components/AiTranslationProgress';
-import { useAiTranslation } from '@/hooks/useAiTranslation';
+import { useEnhancedAiTranslation } from '@/hooks/useEnhancedAiTranslation';
 import { useJsonValidation } from '@/hooks/useJsonValidation';
 import { Language } from '@/types';
-import { Brain, Sparkles, Play, RotateCcw } from 'lucide-react';
+import { Brain, Sparkles, Play, RotateCcw, Zap, Layers } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const containerVariants = {
@@ -19,21 +19,21 @@ const containerVariants = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
+      staggerChildren: 0.05,
+      delayChildren: 0.1,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 10 },
   show: { 
     opacity: 1, 
     y: 0,
     transition: {
       type: "spring",
-      stiffness: 300,
-      damping: 25,
+      stiffness: 200,
+      damping: 20,
     },
   },
 };
@@ -41,6 +41,7 @@ const itemVariants = {
 export default function AiTranslatorPage() {
   const [inputJson, setInputJson] = useState('{\n  "welcome": "Welcome to our app",\n  "login": "Sign in to continue",\n  "email": "Email address",\n  "password": "Password",\n  "submit": "Submit form",\n  "cancel": "Cancel action",\n  "save": "Save changes",\n  "loading": "Please wait..."\n}');
   const [selectedLanguages, setSelectedLanguages] = useState<Language[]>(['es', 'fr']);
+  const [translationMode, setTranslationMode] = useState<'batch' | 'stream'>('batch');
 
   const { isValid, error: validationError } = useJsonValidation(inputJson);
   const { 
@@ -50,9 +51,10 @@ export default function AiTranslatorPage() {
     error: translationError,
     tone,
     setTone,
-    translateJson,
+    translateJsonBatch,
+    translateJsonStream,
     clearTranslations 
-  } = useAiTranslation();
+  } = useEnhancedAiTranslation();
 
   const handleTranslate = useCallback(async () => {
     if (!isValid || selectedLanguages.length === 0) {
@@ -60,8 +62,12 @@ export default function AiTranslatorPage() {
       return;
     }
 
-    await translateJson(inputJson, selectedLanguages);
-  }, [inputJson, selectedLanguages, isValid, translateJson]);
+    if (translationMode === 'batch') {
+      await translateJsonBatch(inputJson, selectedLanguages);
+    } else {
+      await translateJsonStream(inputJson, selectedLanguages);
+    }
+  }, [inputJson, selectedLanguages, isValid, translationMode, translateJsonBatch, translateJsonStream]);
 
   const handleClear = useCallback(() => {
     setInputJson('');
@@ -96,7 +102,7 @@ export default function AiTranslatorPage() {
                 <Brain className="w-6 h-6 text-white" />
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                   className="absolute -top-1 -right-1"
                 >
                   <Sparkles className="w-4 h-4 text-purple-400" />
@@ -117,6 +123,44 @@ export default function AiTranslatorPage() {
             <ToneSelector selectedTone={tone} onToneChange={setTone} />
           </motion.div>
 
+          {/* Translation Mode Selector */}
+          <motion.div variants={itemVariants}>
+            <div className="flex items-center justify-center">
+              <div className="bg-white dark:bg-slate-800 rounded-xl p-1 shadow-lg border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setTranslationMode('batch')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      translationMode === 'batch'
+                        ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    <Layers className="w-4 h-4" />
+                    Batch Mode
+                  </button>
+                  <button
+                    onClick={() => setTranslationMode('stream')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      translationMode === 'stream'
+                        ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    <Zap className="w-4 h-4" />
+                    Stream Mode
+                  </button>
+                </div>
+              </div>
+            </div>
+            <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-2">
+              {translationMode === 'batch' 
+                ? 'Process all languages in a single optimized API call'
+                : 'Stream translations one language at a time for real-time feedback'
+              }
+            </p>
+          </motion.div>
+
           {/* Language Selection */}
           <motion.div variants={itemVariants}>
             <LanguageSelector
@@ -134,18 +178,18 @@ export default function AiTranslatorPage() {
               onClick={handleTranslate}
               disabled={!isValid || selectedLanguages.length === 0 || isTranslating}
               className="flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.01, y: -1 }}
+              whileTap={{ scale: 0.99 }}
             >
               <Play className="w-5 h-5" />
-              {isTranslating ? 'Translating...' : 'AI Translate'}
+              {isTranslating ? 'Translating...' : `Enhanced AI Translate (${translationMode})`}
             </motion.button>
 
             <motion.button
               onClick={handleClear}
               className="flex items-center gap-2 px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.01, y: -1 }}
+              whileTap={{ scale: 0.99 }}
             >
               <RotateCcw className="w-4 h-4" />
               Clear
