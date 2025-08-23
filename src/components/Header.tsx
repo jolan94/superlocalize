@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { useRouter, usePathname } from 'next/navigation';
-import { Sun, Moon, Languages, Sparkles, Github, ExternalLink, Home, Code } from 'lucide-react';
+import { Sun, Moon, Languages, Sparkles, Github, ExternalLink, Home, Code, Brain } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export function Header() {
@@ -41,7 +41,7 @@ export function Header() {
             </div>
             
             {/* Status Indicator */}
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-3 border-white dark:border-slate-900 shadow-lg">
+            <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-[3px] border-white dark:border-slate-900 shadow-lg">
               <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-ping opacity-75"></div>
               <div className="relative w-full h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
                 <Sparkles className="w-2.5 h-2.5 text-white" />
@@ -96,13 +96,31 @@ export function Header() {
             <Code className="w-4 h-4" />
             <span>Translator</span>
           </motion.button>
+          
+          <motion.button
+            onClick={() => router.push('/ai-translator')}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 relative group ${
+              pathname === '/ai-translator' 
+                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 shadow-sm' 
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100/50 dark:hover:bg-slate-800/50'
+            }`}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Brain className="w-4 h-4" />
+            <span>AI Translator</span>
+            {/* AI Badge */}
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full animate-pulse"></div>
+          </motion.button>
         </div>
 
         {/* Navigation Actions */}
         <div className="flex items-center gap-3">
           {/* GitHub Link */}
           <motion.a
-            href="#"
+            href="https://github.com/vercel/next.js"
+            target="_blank"
+            rel="noopener noreferrer"
             className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 bg-slate-100/50 dark:bg-slate-800/50 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 rounded-xl transition-all duration-200 group"
             whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}

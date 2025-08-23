@@ -53,3 +53,35 @@ export interface GoogleTranslateResponse {
     }>;
   };
 }
+
+export type TranslationTone = 'professional' | 'casual' | 'technical';
+
+export interface AiTranslationRequest {
+  text: string;
+  targetLanguage: string;
+  context?: string;
+  tone?: TranslationTone;
+}
+
+export interface AiTranslationResponse {
+  translatedText: string;
+  originalText: string;
+  targetLanguage: string;
+  tone: TranslationTone;
+}
+
+export interface AiTranslationProgress {
+  current: number;
+  total: number;
+  currentKey?: string;
+  currentLanguage?: string;
+  tone?: TranslationTone;
+}
+
+export interface AiTranslationState {
+  translations: TranslationResult;
+  isTranslating: boolean;
+  progress: AiTranslationProgress;
+  error?: string;
+  tone: TranslationTone;
+}
