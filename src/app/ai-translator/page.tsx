@@ -4,14 +4,15 @@ import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { JsonEditor } from '@/components/JsonEditor';
-import { LanguageSelector } from '@/components/LanguageSelector';
+import { FileDropZone } from '@/components/FileDropZone';
+import { LanguagePopup } from '@/components/LanguagePopup';
 import { ResultsPanel } from '@/components/ResultsPanel';
 import { ToneSelector } from '@/components/ToneSelector';
 import { AiTranslationProgress } from '@/components/AiTranslationProgress';
 import { useEnhancedAiTranslation } from '@/hooks/useEnhancedAiTranslation';
 import { useJsonValidation } from '@/hooks/useJsonValidation';
 import { Language } from '@/types';
-import { Brain, Sparkles, Play, RotateCcw, Zap, Layers } from 'lucide-react';
+import { Play, RotateCcw, Zap, Layers, Globe, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const containerVariants = {
@@ -42,6 +43,7 @@ export default function AiTranslatorPage() {
   const [inputJson, setInputJson] = useState('{\n  "welcome": "Welcome to our app",\n  "login": "Sign in to continue",\n  "email": "Email address",\n  "password": "Password",\n  "submit": "Submit form",\n  "cancel": "Cancel action",\n  "save": "Save changes",\n  "loading": "Please wait..."\n}');
   const [selectedLanguages, setSelectedLanguages] = useState<Language[]>(['es', 'fr']);
   const [translationMode, setTranslationMode] = useState<'batch' | 'stream'>('batch');
+  const [isLanguagePopupOpen, setIsLanguagePopupOpen] = useState(false);
 
   const { isValid, error: validationError } = useJsonValidation(inputJson);
   const { 
@@ -75,6 +77,34 @@ export default function AiTranslatorPage() {
     toast.success('All data cleared');
   }, [clearTranslations]);
 
+  const handleLanguageToggle = useCallback((language: Language) => {
+    setSelectedLanguages(prev => 
+      prev.includes(language)
+        ? prev.filter(l => l !== language)
+        : [...prev, language]
+    );
+  }, []);
+
+  const handleSelectAllLanguages = useCallback(() => {
+    // Add all available languages from the Language type
+    const allLanguages: Language[] = [
+      'es', 'fr', 'de', 'it', 'pt', 'zh', 'ja', 'ko', 'ru', 'ar', 'hi',
+      'bn', 'ur', 'id', 'ms', 'ta', 'te', 'mr', 'gu', 'pa', 'uk', 'ro',
+      'el', 'he', 'cs', 'hu', 'bg', 'hr', 'sk', 'sl', 'lt', 'lv', 'et',
+      'sw', 'am', 'yo', 'ig', 'ha', 'fa', 'uz', 'kk', 'az', 'ky',
+      'nl', 'sv', 'da', 'no', 'fi', 'pl', 'tr', 'th', 'vi', 'ca', 'eu',
+      'gl', 'is', 'mt', 'cy', 'ga', 'sq', 'mk', 'be', 'ka', 'hy',
+      'ne', 'si', 'my', 'km', 'lo', 'mn', 'bo', 'dz', 'ml', 'kn', 'or'
+    ];
+    setSelectedLanguages(allLanguages);
+    toast.success('All languages selected');
+  }, []);
+
+  const handleRemoveAllLanguages = useCallback(() => {
+    setSelectedLanguages([]);
+    toast.success('All languages removed');
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-indigo-50 dark:from-slate-900 dark:via-purple-900/10 dark:to-indigo-900/20 overflow-hidden">
       {/* Minimal background elements */}
@@ -92,36 +122,12 @@ export default function AiTranslatorPage() {
           animate="show"
           className="space-y-8"
         >
-          {/* Hero Section */}
-          <motion.div 
-            variants={itemVariants}
-            className="text-center space-y-4"
-          >
-            <div className="flex items-center justify-center gap-3 mb-2">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center relative">
-                <Brain className="w-6 h-6 text-white" />
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                  className="absolute -top-1 -right-1"
-                >
-                  <Sparkles className="w-4 h-4 text-purple-400" />
-                </motion.div>
-              </div>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
-              AI Translator
-            </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Context-aware JSON translation powered by Google Gemini AI
-            </p>
-          </motion.div>
-
-          {/* Tone Selector */}
+          {/* Tone Selector - moved up and made more compact */}
           <motion.div variants={itemVariants}>
             <ToneSelector selectedTone={tone} onToneChange={setTone} />
           </motion.div>
+
+
 
           {/* Translation Mode Selector */}
           <motion.div variants={itemVariants}>
@@ -163,10 +169,23 @@ export default function AiTranslatorPage() {
 
           {/* Language Selection */}
           <motion.div variants={itemVariants}>
-            <LanguageSelector
-              selectedLanguages={selectedLanguages}
-              onLanguageChange={setSelectedLanguages}
-            />
+            <div className="flex items-center justify-center">
+              <button
+                onClick={() => setIsLanguagePopupOpen(true)}
+                className="flex items-center gap-3 px-6 py-3 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <Globe className="w-5 h-5 text-blue-600" />
+                <div className="text-left">
+                  <div className="font-medium text-slate-800 dark:text-slate-200">
+                    Target Languages
+                  </div>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">
+                    {selectedLanguages.length} language{selectedLanguages.length !== 1 ? 's' : ''} selected
+                  </div>
+                </div>
+                <ChevronDown className="w-4 h-4 text-slate-400" />
+              </button>
+            </div>
           </motion.div>
 
           {/* Action Buttons */}
@@ -236,6 +255,12 @@ export default function AiTranslatorPage() {
                 </h2>
               </div>
               
+              {/* File Drop Zone */}
+              <FileDropZone
+                onFileContent={setInputJson}
+                className="mb-4"
+              />
+              
               <JsonEditor
                 value={inputJson}
                 onChange={setInputJson}
@@ -262,6 +287,16 @@ export default function AiTranslatorPage() {
           </motion.div>
         </motion.div>
       </main>
+
+      {/* Language Selection Popup */}
+      <LanguagePopup
+        isOpen={isLanguagePopupOpen}
+        onClose={() => setIsLanguagePopupOpen(false)}
+        selectedLanguages={selectedLanguages}
+        onLanguageToggle={handleLanguageToggle}
+        onSelectAll={handleSelectAllLanguages}
+        onRemoveAll={handleRemoveAllLanguages}
+      />
     </div>
   );
 }
